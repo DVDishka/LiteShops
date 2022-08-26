@@ -1,0 +1,11 @@
+name: Shops
+version: '${project.version}'
+main: ru.dvdishka.shops.Shops
+api-version: 1.18
+prefix: Shops
+authors: [ dvdishka ]
+description: Shops plugin
+website: mc.dvdcraft.ru
+commands:
+  shop:
+    description: Main command
