@@ -1,12 +1,11 @@
 package ru.dvdishka.shops.shop.shopHandlers;
 
-import com.destroystokyo.paper.Title;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Sound;
 import ru.dvdishka.shops.common.ConfigVariables;
 import ru.dvdishka.shops.shop.Classes.Shop;
 import ru.dvdishka.shops.common.CommonVariables;
@@ -50,15 +49,17 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 
             CommonVariables.playerShopCreating.put(player.getName(), shopName);
 
-            TextComponent text = Component
-                    .text("Creating a shop costs " + ConfigVariables.shopCost.getAmount() + " "
+            BaseComponent[] text = new ComponentBuilder("Creating a shop costs " + ConfigVariables.shopCost.getAmount() + " "
                             + ConfigVariables.shopCost.getType().name().toLowerCase() + "\n")
-                    .append(Component.text(ChatColor.GREEN + "[CREATE]")
-                    .clickEvent(ClickEvent.runCommand("/shop creating " + shopName + " " + player.getName())))
-                    .append(Component.text("   "))
-                    .append(Component.text(ChatColor.RED + "[CANCEL]")
-                    .clickEvent(ClickEvent.runCommand("/shop creating cancel " + player.getName())));
-            sender.sendMessage(text);
+                    .append("[CREATE]")
+                    .color(net.md_5.bungee.api.ChatColor.GREEN)
+                    .event(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/shop creating " + shopName + " " + player.getName()))
+                    .append("   ")
+                    .append("[CANCEL]")
+                    .color(net.md_5.bungee.api.ChatColor.RED)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/shop creating cancel " + player.getName()))
+                    .create();
+            sender.spigot().sendMessage(text);
             return true;
         }
 
@@ -107,18 +108,12 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
             CommonVariables.shopsInventories.put(shop.getName(), pages);
             CommonVariables.playerShopCreating.remove(player.getName());
 
-            player.playSound(
-                    net.kyori.adventure.sound.Sound.sound
-                    (org.bukkit.Sound.ENTITY_PLAYER_LEVELUP,
-                            Sound.Source.NEUTRAL,
-                            50,
-                            1));
+            player.playSound(player.getLocation(),
+                    Sound.ENTITY_PLAYER_LEVELUP,
+                    50, 1);
 
-            player.sendTitle(Title
-                    .builder()
-                    .title(ChatColor.DARK_GREEN + shop.getName())
-                    .subtitle(ChatColor.GOLD + "has been created")
-                    .build());
+            player.sendTitle(ChatColor.DARK_GREEN + shop.getName(),
+                    ChatColor.GOLD + "has been created");
             return true;
         }
 
@@ -253,20 +248,13 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
             }
             ItemMeta meta = CommonVariables.shopsInventories.get(shop.getName()).get(page - 1).getItem(index - 1).getItemMeta();
 
-            List<BaseComponent[]> list = new ArrayList<>();
-            list.add(new ComponentBuilder("Price: ")
-                    .color(net.md_5.bungee.api.ChatColor.GREEN)
-                    .append(args[6])
-                    .color(net.md_5.bungee.api.ChatColor.RED)
-                    .append(" ")
-                    .append(args[5].toUpperCase())
-                    .color(net.md_5.bungee.api.ChatColor.RED)
-                    .create());
-            meta.setLoreComponents(list);
+            List<String> list = new ArrayList<>();
+            list.add(ChatColor.GREEN + "Price: " + ChatColor.RED + args[6] + " " + args[5].toUpperCase());
+            meta.setLore(list);
 
             CommonVariables.shopsInventories.get(shop.getName()).get(page - 1).getItem(index - 1).setItemMeta(meta);
-            player.sendTitle(Title.builder().title(ChatColor.DARK_GREEN + shop.getName()).subtitle(ChatColor.GOLD +
-                    "price has been set").build());
+            player.sendTitle(ChatColor.DARK_GREEN + shop.getName(), ChatColor.GOLD +
+                    "price has been set");
             return true;
         }
 
@@ -310,10 +298,8 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                     checkShop.setIcon(icon);
                 }
             }
-            player.sendTitle(Title.builder()
-                    .title(ChatColor.DARK_GREEN + name)
-                    .subtitle(ChatColor.GOLD + "Shop name has been set")
-                    .build());
+            player.sendTitle(ChatColor.DARK_GREEN + name,
+                    ChatColor.GOLD + "Shop name has been set");
             return true;
         }
 
@@ -425,43 +411,23 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 
             ItemStack newPage = new ItemStack(Material.PAPER);
             ItemMeta newPageMeta = newPage.getItemMeta();
-            newPageMeta.setDisplayNameComponent(new ComponentBuilder("New Page")
-                    .color(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE)
-                    .create());
-            List<BaseComponent[]> lore = new ArrayList<>();
-            lore.add(new ComponentBuilder("Price: ")
-                    .color(net.md_5.bungee.api.ChatColor.GREEN)
-                    .append(ConfigVariables.newPageCost.getAmount() + " " +
-                            ConfigVariables.newPageCost.getType().name())
-                    .color(net.md_5.bungee.api.ChatColor.RED)
-                    .create());
-            lore.add(new ComponentBuilder("Progress: ")
-                    .color(net.md_5.bungee.api.ChatColor.AQUA)
-                    .append(String.valueOf(shop.getUpgrade().getPageProgress()))
-                    .color(net.md_5.bungee.api.ChatColor.GOLD)
-                    .create());
-            newPageMeta.setLoreComponents(lore);
+            newPageMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "New Page");
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GREEN + "Price: " + ChatColor.RED + ConfigVariables.newPageCost.getAmount() + " " +
+                    ConfigVariables.newPageCost.getType().name());
+            lore.add(ChatColor.AQUA + "Progress: " + ChatColor.GOLD + shop.getUpgrade().getPageProgress());
+            newPageMeta.setLore(lore);
             newPage.setItemMeta(newPageMeta);
             inventory.setItem(13, newPage);
 
             ItemStack newLine = new ItemStack(Material.STICK);
             ItemMeta newLineMeta = newLine.getItemMeta();
-            newLineMeta.setDisplayNameComponent(new ComponentBuilder("New Line")
-                    .color(net.md_5.bungee.api.ChatColor.GREEN)
-                    .create());
-            List<BaseComponent[]> newLineLore = new ArrayList<>();
-            newLineLore.add(new ComponentBuilder("Price: ")
-                    .color(net.md_5.bungee.api.ChatColor.GREEN)
-                    .append(ConfigVariables.newLineCost.getAmount() + " " +
-                            ConfigVariables.newLineCost.getType().name())
-                    .color(net.md_5.bungee.api.ChatColor.RED)
-                    .create());
-            newLineLore.add(new ComponentBuilder("Progress: ")
-                    .color(net.md_5.bungee.api.ChatColor.AQUA)
-                    .append(shop.getUpgrade().getLineProgress() + "/6")
-                    .color(net.md_5.bungee.api.ChatColor.GOLD)
-                    .create());
-            newLineMeta.setLoreComponents(newLineLore);
+            newLineMeta.setDisplayName(ChatColor.GREEN + "New Line");
+            List<String> newLineLore = new ArrayList<>();
+            newLineLore.add(ChatColor.GREEN + "Price: " + ChatColor.RED + ConfigVariables.newLineCost.getAmount() + " " +
+                    ConfigVariables.newLineCost.getType().name());
+            newLineLore.add(ChatColor.AQUA + "Progress: " + ChatColor.GOLD + shop.getUpgrade().getLineProgress() + "/6");
+            newLineMeta.setLore(newLineLore);
             newLine.setItemMeta(newLineMeta);
             inventory.setItem(12, newLine);
 

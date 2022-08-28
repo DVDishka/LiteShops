@@ -3,7 +3,6 @@ package ru.dvdishka.shops.shop.Classes;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.jetbrains.annotations.NotNull;
-import ru.dvdishka.shops.common.CommonVariables;
 
 import java.util.HashMap;
 import java.util.Map;
