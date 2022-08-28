@@ -1,7 +1,7 @@
-package ru.dvdishka.shops.shop.shopHandlers;
+package ru.dvdishka.shops.handlers;
 
 import org.bukkit.Material;
-import ru.dvdishka.shops.shop.Classes.Shop;
+import ru.dvdishka.shops.Classes.Shop;
 import ru.dvdishka.shops.common.CommonVariables;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,23 +25,40 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
                     flag = true;
                 }
             }
+            for (Shop shop : CommonVariables.infiniteShops) {
+                if (shop.getOwner().equals(sender.getName())) {
+                    flag = true;
+                }
+            }
             if (flag) {
-                return List.of("create", "edit", "upgrade", "open", "coffer");
+                return Arrays.asList("create", "edit", "upgrade", "open", "coffer", "infinite");
             } else {
-                return List.of("create", "open");
+                return Arrays.asList("create", "open", "infinite");
             }
         }
 
         if (args.length == 2) {
 
             if (args[0].equals("create")) {
-                return List.of("<name>");
+                return Arrays.asList("<name>");
             }
 
             else if (args[0].equals("edit") || args[0].equals("upgrade") || args[0].equals("coffer")) {
+
                 ArrayList<String> list = new ArrayList<>();
+
                 for (Shop shop : CommonVariables.shops) {
+
                     if (shop.getOwner().equals(sender.getName())) {
+
+                        list.add(shop.getName());
+                    }
+                }
+
+                for (Shop shop : CommonVariables.infiniteShops) {
+
+                    if (shop.getOwner().equals(sender.getName())) {
+
                         list.add(shop.getName());
                     }
                 }
@@ -51,29 +69,48 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
                     }
                 });
                 return list;
+            } else if (args[0].equals("infinite")) {
+
+                return Arrays.asList("sell", "buy");
             }
         }
 
         if (args.length == 3) {
 
             if (args[0].equals("edit")) {
-                return List.of("price", "name", "icon");
+
+                return Arrays.asList("price", "name", "icon");
+
+            } else if (args[0].equals("infinite") && sender.isOp()) {
+
+                return Arrays.asList("create", "open");
+
+            } else if (args[0].equals("infinite") && !sender.isOp()) {
+
+                return Arrays.asList("open");
             }
         }
 
         if (args.length == 4) {
 
             if (args[0].equals("edit") && args[2].equals("price")) {
-                return List.of("<page>");
+
+                return Arrays.asList("<page>");
+
             } else if (args[0].equals("edit") && args[2].equals("name")) {
-                return List.of("<newName>");
+
+                return Arrays.asList("<newName>");
+
+            } else if (args[0].equals("infinite") && args[1].equals("create")) {
+
+                return Arrays.asList("<shopName>");
             }
         }
 
         if (args.length == 5) {
 
             if (args[0].equals("edit") && args[2].equals("price")) {
-                return List.of("<index>");
+                return Arrays.asList("<index>");
             }
         }
 
@@ -97,9 +134,9 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
         if (args.length == 7) {
 
             if (args[0].equals("edit") && args[2].equals("price")) {
-                return List.of("<amount>");
+                return Arrays.asList("<amount>");
             }
         }
-        return List.of();
+        return Arrays.asList();
     }
 }

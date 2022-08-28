@@ -1,22 +1,22 @@
 package ru.dvdishka.shops.common;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
 public class Functions {
 
-    public static boolean doHave(Player player, ItemStack item) {
+    public static boolean hasItem(Player player, ItemStack item) {
 
         int amount = item.getAmount();
         int playerItemAmount = 0;
         Inventory inventory = player.getInventory();
         for (ItemStack checkItem : inventory) {
             if (checkItem != null && checkItem.getType().equals(item.getType())) {
-                playerItemAmount++;
+                playerItemAmount += checkItem.getAmount();
             }
         }
         return playerItemAmount >= amount;
@@ -69,5 +69,15 @@ public class Functions {
         }
         splitStrings.add(splitString);
         return splitStrings;
+    }
+
+    public static String removeChatColors(String str) {
+
+        for (ChatColor chatColor : ChatColor.values()) {
+
+            str = str.replace(chatColor.toString(), "");
+        }
+
+        return str;
     }
 }

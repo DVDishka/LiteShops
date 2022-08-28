@@ -4,16 +4,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import ru.dvdishka.shops.backwardsCompatibility.ShopItem;
 import ru.dvdishka.shops.common.ConfigVariables;
-import ru.dvdishka.shops.shop.Classes.Shop;
+import ru.dvdishka.shops.Classes.Shop;
 import ru.dvdishka.shops.common.CommonVariables;
-import ru.dvdishka.shops.shop.Classes.Upgrade;
-import ru.dvdishka.shops.shop.shopHandlers.EventHandler;
+import ru.dvdishka.shops.Classes.Upgrade;
 import org.bukkit.*;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.dvdishka.shops.common.Initialization;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -33,6 +33,18 @@ public final class Shops extends JavaPlugin {
         File rootDir = new File("plugins/Shops");
         File shopsFile = new File("plugins/Shops/shops.yml");
         File configFile = new File("plugins/Shops/config.yml");
+        File infiniteShopsFile = new File("plugins/Shops/infiniteShops.yml");
+
+        ItemStack prevPage = new ItemStack(Material.ARROW);
+        ItemStack nextPage = new ItemStack(Material.ARROW);
+        ItemMeta prevPageMeta = prevPage.getItemMeta();
+        prevPageMeta.setDisplayName("<--");
+        prevPage.setItemMeta(prevPageMeta);
+        ItemMeta nextPageMeta = nextPage.getItemMeta();
+        nextPageMeta.setDisplayName("-->");
+        nextPage.setItemMeta(nextPageMeta);
+        CommonVariables.prevPage = prevPage;
+        CommonVariables.nextPage = nextPage;
 
         if (!rootDir.exists()) {
             if (rootDir.mkdir()) {
@@ -108,9 +120,9 @@ public final class Shops extends JavaPlugin {
 
             ConfigVariables.defaultNextPageIndex = ConfigVariables.defaultInventorySize - 1;
             if (ConfigVariables.defaultInventorySize % 9 == 0) {
-                ConfigVariables.prevPageIndex = ConfigVariables.defaultInventorySize - 9;
+                ConfigVariables.defaultPrevPageIndex = ConfigVariables.defaultInventorySize - 9;
             } else {
-                ConfigVariables.prevPageIndex = (ConfigVariables.defaultInventorySize / 9) * 9;
+                ConfigVariables.defaultPrevPageIndex = (ConfigVariables.defaultInventorySize / 9) * 9;
             }
         }
         if (!shopsFile.exists()) {
@@ -136,18 +148,32 @@ public final class Shops extends JavaPlugin {
                 CommonVariables.logger.warning("Something went wrong while trying to read shops.yml");
             }
         }
+        if (!infiniteShopsFile.exists()) {
+            try {
+                if (infiniteShopsFile.createNewFile()) {
+                    CommonVariables.logger.info("infiniteShops.yml file has been created!");
+                } else {
+                    CommonVariables.logger.warning("infiniteShops.yml file can not be created!");
+                }
+            } catch (Exception e) {
+                CommonVariables.logger.warning("infiniteShops.yml file can not be created!");
+            }
+        } else {
+            try {
+                FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Shops/infiniteShops.yml"));
+                CommonVariables.infiniteShops = (ArrayList<Shop>) config.get("InfiniteShops");
+                HashMap<String, ArrayList<Inventory>> infiniteShopsInventories = new HashMap<>();
+                for (Shop shop : CommonVariables.infiniteShops) {
+                    infiniteShopsInventories.put(shop.getName(), shop.getItems());
+                }
+                CommonVariables.infiniteShopsInventories = infiniteShopsInventories;
+            } catch (Exception e) {
+                CommonVariables.logger.warning("Something went wrong while trying to read infiniteShops.yml");
+            }
+        }
 
-
-        PluginCommand shopCommand = Bukkit.getPluginCommand("shop");
-
-        ru.dvdishka.shops.shop.shopHandlers.CommandExecutor shopCommandExecutor = new ru.dvdishka.shops.shop.shopHandlers.CommandExecutor();
-        ru.dvdishka.shops.shop.shopHandlers.TabCompleter shopTabCompleter = new ru.dvdishka.shops.shop.shopHandlers.TabCompleter();
-
-        Bukkit.getPluginManager().registerEvents(new EventHandler(), this);
-
-        assert shopCommand != null;
-        shopCommand.setExecutor(shopCommandExecutor);
-        shopCommand.setTabCompleter(shopTabCompleter);
+        Initialization.registerEventHandlers(this);
+        Initialization.registerCommands();
 
         CommonVariables.logger.info("Shops plugin has been enabled!");
     }
@@ -155,15 +181,26 @@ public final class Shops extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        File file = new File("plugins/Shops/prices.json");
+        FileConfiguration shopsSavingConfig = new YamlConfiguration();
+        shopsSavingConfig.set("Shops", CommonVariables.shops);
 
-        FileConfiguration shopsConfig = new YamlConfiguration();
-        shopsConfig.set("Shops", CommonVariables.shops);
         try {
-            shopsConfig.save(new File("plugins/Shops/shops.yml"));
+            shopsSavingConfig.save(new File("plugins/Shops/shops.yml"));
         } catch (Exception e) {
             CommonVariables.logger.warning("Something went wrong while trying to write shops.yml file");
+            CommonVariables.logger.warning(e.getMessage());
         }
-        CommonVariables.logger.info("Bank plugin has been disabled!");
+
+        FileConfiguration infiniteShopsSavingConfig = new YamlConfiguration();
+        infiniteShopsSavingConfig.set("InfiniteShops", CommonVariables.infiniteShops);
+
+        try {
+            infiniteShopsSavingConfig.save(new File("plugins/Shops/infiniteShops.yml"));
+        } catch (Exception e) {
+            CommonVariables.logger.warning("Something went wrong while trying to write infiniteShops.yml file");
+            CommonVariables.logger.warning(e.getMessage());
+        }
+
+        CommonVariables.logger.info("Shops plugin has been disabled!");
     }
 }

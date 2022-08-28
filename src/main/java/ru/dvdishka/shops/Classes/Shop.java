@@ -1,4 +1,4 @@
-package ru.dvdishka.shops.shop.Classes;
+package ru.dvdishka.shops.Classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,15 +26,19 @@ public class Shop implements ConfigurationSerializable {
     private ArrayList<Inventory> coffer = new ArrayList<>();
     private ItemStack icon;
     private Upgrade upgrade;
+    private boolean infinite;
+    private boolean sell;
 
     public Shop(String name, String owner, ArrayList<Inventory> items, ArrayList<Inventory> coffer, ItemStack icon,
-                Upgrade upgrade) {
+                Upgrade upgrade, boolean infinite, boolean sell) {
         this.name = name;
         this.owner = owner;
         this.items = items;
         this.coffer = coffer;
         this.icon = icon;
         this.upgrade = upgrade;
+        this.infinite = infinite;
+        this.sell = sell;
     }
 
     public Shop(String name, String owner, ItemStack icon) {
@@ -46,6 +50,21 @@ public class Shop implements ConfigurationSerializable {
         } else {
             this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9 + 1);
         }
+        this.infinite = false;
+        this.sell = false;
+    }
+
+    public Shop(String name, String owner, ItemStack icon, boolean infinite, boolean sell) {
+        this.name = name;
+        this.owner = owner;
+        this.icon = icon;
+        if (ConfigVariables.defaultInventorySize % 9 == 0) {
+            this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9);
+        } else {
+            this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9 + 1);
+        }
+        this.infinite = infinite;
+        this.sell = sell;
     }
 
     public String getName() {
@@ -70,6 +89,14 @@ public class Shop implements ConfigurationSerializable {
 
     public Upgrade getUpgrade() {
         return this.upgrade;
+    }
+
+    public boolean isInfinite() {
+        return this.infinite;
+    }
+
+    public boolean isSell() {
+        return this.sell;
     }
 
     public void setName(String name) {
@@ -106,21 +133,53 @@ public class Shop implements ConfigurationSerializable {
                 return shop;
             }
         }
+        for (Shop shop : CommonVariables.infiniteShops) {
+            if (shop.getName().equals(name)) {
+                return shop;
+            }
+        }
         return null;
+    }
+
+    public void setInfinite(boolean infinite) {
+        this.infinite = infinite;
+    }
+
+    public void setSell(boolean sell) {
+        this.sell = sell;
     }
 
     @Override
     public @NotNull Map<String, Object> serialize() {
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("name", name);
         map.put("owner", owner);
         ArrayList<ArrayList<ItemStack>> contents = new ArrayList<>();
-        for (Inventory inventory : CommonVariables.shopsInventories.get(name)) {
-            ArrayList<ItemStack> itemStacks = new ArrayList<>();
-            for (int i = 0; i < inventory.getSize(); i++) {
-                itemStacks.add(inventory.getItem(i));
+        if (!isInfinite()) {
+
+            for (Inventory inventory : CommonVariables.shopsInventories.get(name)) {
+
+                ArrayList<ItemStack> itemStacks = new ArrayList<>();
+
+                for (int i = 0; i < inventory.getSize(); i++) {
+
+                    itemStacks.add(inventory.getItem(i));
+                }
+                contents.add(itemStacks);
             }
-            contents.add(itemStacks);
+        } else {
+
+            for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(name)) {
+
+                ArrayList<ItemStack> itemStacks = new ArrayList<>();
+
+                for (int i = 0; i < inventory.getSize(); i++) {
+
+                    itemStacks.add(inventory.getItem(i));
+                }
+                contents.add(itemStacks);
+            }
         }
         ArrayList<ArrayList<ItemStack>> coffers = new ArrayList<>();
         for (Inventory inventory : coffer) {
@@ -134,6 +193,8 @@ public class Shop implements ConfigurationSerializable {
         map.put("items", contents);
         map.put("icon", icon);
         map.put("upgrade", upgrade);
+        map.put("infinite", infinite);
+        map.put("sell", sell);
         return map;
     }
 
@@ -141,78 +202,128 @@ public class Shop implements ConfigurationSerializable {
 
         String name = (String) map.get("name");
         String owner = (String) map.get("owner");
+
+        boolean infinite = (boolean) map.get("infinite");
+        boolean sell = (boolean) map.get("sell");
+
         ArrayList<ArrayList<ItemStack>> contents = (ArrayList<ArrayList<ItemStack>>) map.get("items");
         ArrayList<ArrayList<ItemStack>> coffers = (ArrayList<ArrayList<ItemStack>>) map.get("coffer");
+
         ItemStack icon;
+
         if (map.get("icon") == null) {
+
             icon = new ItemStack(Material.BARRIER);
             ItemMeta iconMeta = icon.getItemMeta();
             iconMeta.setDisplayName(name);
             icon.setItemMeta(iconMeta);
+
         } else {
+
             icon = (ItemStack) map.get("icon");
         }
+
         Upgrade upgrade = (Upgrade) map.get("upgrade");
 
-        ItemStack prevPage = new ItemStack(Material.ARROW);
-        ItemStack nextPage = new ItemStack(Material.ARROW);
-        ItemMeta prevPageMeta = prevPage.getItemMeta();
-        prevPageMeta.setDisplayName("<--");
-        prevPage.setItemMeta(prevPageMeta);
-        ItemMeta nextPageMeta = nextPage.getItemMeta();
-        nextPageMeta.setDisplayName("-->");
-        nextPage.setItemMeta(nextPageMeta);
-
         ArrayList<Inventory> coffer = new ArrayList<>();
+
         int i = 1;
+
         for (ArrayList<ItemStack> item : coffers) {
+
             Inventory inventory = Bukkit.createInventory(null, item.size(),
                     ChatColor.GOLD + name + " coffer " + i);
+
             int index = 0;
+
             for (ItemStack itemStack : item) {
-                if (index != ConfigVariables.prevPageIndex && index != ConfigVariables.defaultNextPageIndex) {
+
+                if (index != ConfigVariables.defaultPrevPageIndex && index != ConfigVariables.defaultNextPageIndex) {
                     inventory.setItem(index, itemStack);
                 }
                 index++;
             }
+
+            inventory.setItem(ConfigVariables.defaultPrevPageIndex, CommonVariables.prevPage);
+            inventory.setItem(ConfigVariables.defaultNextPageIndex, CommonVariables.nextPage);
+
             coffer.add(inventory);
             i++;
         }
 
         try {
+
             i = 1;
+
             ArrayList<Inventory> items = new ArrayList<>();
+
             for (ArrayList<ItemStack> item : contents) {
-                Inventory inventory = Bukkit.createInventory(null, item.size(),
-                        ChatColor.GOLD + name + " " + i);
+
+                Inventory inventory;
+
+                if (!infinite) {
+
+                    inventory = Bukkit.createInventory(null, item.size(),
+                            ChatColor.GOLD + name + " " + i);
+
+                } else {
+
+                    if (sell) {
+
+                        inventory = Bukkit.createInventory(null, item.size(),
+                                ChatColor.RED + name + " " + i);
+
+                    } else {
+
+                        inventory = Bukkit.createInventory(null, item.size(),
+                                ChatColor.GREEN + name + " " + i);
+                    }
+                }
+
                 int index = 0;
+
                 for (ItemStack itemStack : item) {
+
                     inventory.setItem(index, itemStack);
                     index++;
                 }
+
                 items.add(inventory);
                 i++;
             }
-            return new Shop(name, owner, items, coffer, icon, upgrade);
+
+            return new Shop(name, owner, items, coffer, icon, upgrade, infinite, sell);
+
         } catch (Exception e) {
-            CommonVariables.logger.warning(e.getMessage());
+
             ArrayList<Inventory> items = new ArrayList<>();
             ArrayList<ShopItem> oldItems = (ArrayList<ShopItem>) map.get("items");
+
             Inventory inventory = Bukkit.createInventory(null, 27,
                     ChatColor.GOLD + name + " 1");
+
             i = 0;
+
             for (ShopItem shopItem : oldItems) {
+
                 if (shopItem != null) {
+
                     inventory.setItem(i, shopItem.getItem());
+
                 } else {
+
                     inventory.setItem(i, null);
                 }
+
                 i++;
             }
-            inventory.setItem(ConfigVariables.prevPageIndex, prevPage);
-            inventory.setItem(ConfigVariables.defaultNextPageIndex, nextPage);
+
+            inventory.setItem(ConfigVariables.defaultPrevPageIndex, CommonVariables.prevPage);
+            inventory.setItem(ConfigVariables.defaultNextPageIndex, CommonVariables.nextPage);
+
             items.add(inventory);
-            return new Shop(name, owner, items, coffer, icon, upgrade);
+
+            return new Shop(name, owner, items, coffer, icon, upgrade, infinite, sell);
         }
     }
 }

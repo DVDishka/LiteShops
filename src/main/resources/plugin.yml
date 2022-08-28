@@ -1,7 +1,7 @@
 name: Shops
 version: '${project.version}'
 main: ru.dvdishka.shops.Shops
-api-version: 1.18
+api-version: 1.16
 prefix: Shops
 authors: [ dvdishka ]
 description: Shops plugin

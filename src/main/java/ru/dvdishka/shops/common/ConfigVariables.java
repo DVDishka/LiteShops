@@ -10,5 +10,5 @@ public class ConfigVariables {
     public static ItemStack newLineCost = new ItemStack(Material.DIAMOND, 10);
     public static int defaultInventorySize = 27;
     public static int defaultNextPageIndex = 26;
-    public static int prevPageIndex = 18;
+    public static int defaultPrevPageIndex = 18;
 }
