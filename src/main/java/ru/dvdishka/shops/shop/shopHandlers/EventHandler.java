@@ -590,7 +590,7 @@ public class EventHandler implements Listener {
                         ItemMeta nextPageMeta = nextPage.getItemMeta();
                         nextPageMeta.setDisplayName("-->");
                         nextPage.setItemMeta(nextPageMeta);
-                        Inventory inventory = Bukkit.createInventory(null, ConfigVariables.defaultInventorySize,
+                        Inventory inventory = Bukkit.createInventory(null, CommonVariables.shopsInventories.get(shop.getName()).get(0).getSize(),
                                 ChatColor.GOLD + shop.getName() + " " +
                                         (CommonVariables.shopsInventories.get(shop.getName()).size() + 1));
                         inventory.setItem(ConfigVariables.prevPageIndex, prevPage);
