@@ -402,15 +402,24 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
             int inventoryIndex = 0;
             for (Material icon : Material.values()) {
                 if (!icon.equals(Material.LIGHT_GRAY_STAINED_GLASS_PANE) && !icon.equals(Material.AIR)) {
+
                     if (stackIndex == 45) {
+
                         stackIndex++;
                     }
+
                     if (stackIndex == 53) {
+
                         stackIndex = 0;
                         inventoryIndex++;
                     }
+
                     icons.get(inventoryIndex).setItem(stackIndex, new ItemStack(icon));
                     stackIndex++;
+
+                    if (icons.get(inventoryIndex).getItem(stackIndex - 1) == null) {
+                        stackIndex--;
+                    }
                 }
             }
 
