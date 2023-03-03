@@ -17,6 +17,8 @@ import ru.dvdishka.shops.Classes.Shop;
 
 import java.util.List;
 
+import static ru.dvdishka.shops.common.Functions.sendFailure;
+
 public class InfiniteSellShopInventoryEvent implements Listener {
 
     @org.bukkit.event.EventHandler
@@ -224,7 +226,7 @@ public class InfiniteSellShopInventoryEvent implements Listener {
 
                                         if (!Functions.hasItem((Player) event.getWhoClicked(), event.getCurrentItem())) {
 
-                                            event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have "
+                                            sendFailure((Player) event.getWhoClicked(), "You do not have "
                                                     + event.getCurrentItem().getAmount() + " " +
                                                     event.getCurrentItem().getType().name());
 
@@ -287,8 +289,8 @@ public class InfiniteSellShopInventoryEvent implements Listener {
 
                                                 Inventory newCoffer = Bukkit.createInventory(null,
                                                         ConfigVariables.defaultInventorySize,
-                                                        ChatColor.GOLD + shop.getName() + " coffer " +
-                                                                shop.getCoffer().size() + 1);
+                                                        ChatColor.RED + (ChatColor.BOLD + shop.getName() + " coffer: ") +
+                                                                ChatColor.RESET + shop.getCoffer().size() + 1);
 
                                                 newCoffer.setItem(ConfigVariables.defaultPrevPageIndex, CommonVariables.prevPage);
                                                 newCoffer.setItem(ConfigVariables.defaultNextPageIndex, CommonVariables.nextPage);
@@ -305,7 +307,8 @@ public class InfiniteSellShopInventoryEvent implements Listener {
                                                 50, 1);
 
                                     } catch (Exception e) {
-                                        event.getWhoClicked().sendMessage(ChatColor.RED + "Something went wrong!");
+
+                                        sendFailure((Player) event.getWhoClicked(), "Something went wrong!");
                                         player.playSound(player.getLocation(),
                                                 org.bukkit.Sound.BLOCK_ANVIL_PLACE,
                                                 50, 1);
@@ -313,7 +316,8 @@ public class InfiniteSellShopInventoryEvent implements Listener {
                                         return;
                                     }
                                 } else {
-                                    event.getWhoClicked().sendMessage(ChatColor.RED + "This item has no price!");
+
+                                    sendFailure((Player) event.getWhoClicked(), "This item has no price!");
                                     player.playSound(player.getLocation(),
                                             org.bukkit.Sound.BLOCK_ANVIL_PLACE,
                                             50, 1);

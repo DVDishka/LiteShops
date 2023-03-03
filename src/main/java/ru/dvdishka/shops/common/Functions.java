@@ -6,6 +6,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Functions {
 
@@ -79,5 +80,42 @@ public class Functions {
         }
 
         return str;
+    }
+
+    public static boolean isCreatingShop(Player player) {
+
+        return CommonVariables.playerShopCreating.containsKey(player.getName());
+    }
+
+    public static boolean doHaveOneOfPermissions(Player player, List<String> permissions) {
+
+        for (String permission : permissions) {
+
+            if (player.hasPermission(permission)) {
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void sendSuccess(Player player, String message) {
+
+        player.sendMessage(ChatColor.DARK_GREEN + (ChatColor.BOLD + message));
+    }
+
+    public static void sendSuccess(Player player, String message, ChatColor color) {
+
+        player.sendMessage(color + (ChatColor.BOLD + message));
+    }
+
+    public static void sendFailure(Player player, String message) {
+
+        player.sendMessage(ChatColor.RED + (ChatColor.BOLD + message));
+    }
+
+    public static void sendFailure(Player player, String message, ChatColor color) {
+
+        player.sendMessage(color + (ChatColor.BOLD + message));
     }
 }

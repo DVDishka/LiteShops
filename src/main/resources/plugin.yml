@@ -6,6 +6,33 @@ prefix: Shops
 authors: [ dvdishka ]
 description: Shops plugin
 website: mc.dvdcraft.ru
-commands:
-  shop:
-    description: Main command
+permissions:
+  liteshops.*:
+    default: op
+    children:
+      liteshops.command*:
+        children:
+          liteshops.command.open:
+            default: true
+          liteshops.command.create:
+            default: true
+          liteshops.command.edit:
+            default: true
+          liteshops.command.coffer:
+            default: true
+      liteshops.infinite*:
+        children:
+          liteshops.infinite.command*:
+            children:
+              liteshops.infinite.command.open*:
+                children:
+                  liteshops.infinite.command.open.sell:
+                   default: true
+                  liteshops.infinite.command.open.buy:
+                    default: true
+              liteshops.infinite.command.create*:
+                children:
+                  liteshops.infinite.command.create.sell:
+                    default: op
+                  liteshops.infinite.command.create.buy:
+                    default: op

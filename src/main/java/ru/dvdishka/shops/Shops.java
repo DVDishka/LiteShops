@@ -1,5 +1,7 @@
 package ru.dvdishka.shops;
 
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -30,6 +32,8 @@ public final class Shops extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        CommandAPI.onEnable(this);
+
         File rootDir = new File("plugins/Shops");
         File shopsFile = new File("plugins/Shops/shops.yml");
         File configFile = new File("plugins/Shops/config.yml");
@@ -46,32 +50,27 @@ public final class Shops extends JavaPlugin {
         CommonVariables.prevPage = prevPage;
         CommonVariables.nextPage = nextPage;
 
+        for (Material material : Material.values()) {
+
+            CommonVariables.materials.add(material.name());
+        }
+
         if (!rootDir.exists()) {
+
             if (rootDir.mkdir()) {
+
                 CommonVariables.logger.info("Shops directory has been created!");
+
             } else {
+
                 CommonVariables.logger.warning("Shops directory can not be created!");
             }
         }
         if (!configFile.exists()) {
-            try {
-                if (configFile.createNewFile()) {
-                    FileConfiguration config = new YamlConfiguration();
-                    config.set("shopCost.material", "diamond");
-                    config.set("shopCost.amount", 10);
-                    config.set("newPageCost.material", "diamond");
-                    config.set("newPageCost.amount", 10);
-                    config.set("defaultInventorySize", 27);
-                    config.set("newLineCost.material", "diamond");
-                    config.set("newLineCost.amount", 10);
-                    config.save(configFile);
-                    CommonVariables.logger.info("config.yml file has been created!");
-                } else {
-                    CommonVariables.logger.warning("config.yml file can not be created!");
-                }
-            } catch (Exception e) {
-                CommonVariables.logger.warning("config.yml file can not be created!");
-            }
+
+            saveDefaultConfig();
+            CommonVariables.logger.info("Config file has been created!");
+
         } else {
             FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Shops/config.yml"));
 
@@ -137,15 +136,22 @@ public final class Shops extends JavaPlugin {
             }
         } else {
             try {
+
                 FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Shops/shops.yml"));
                 CommonVariables.shops = (ArrayList<Shop>) config.get("Shops");
                 HashMap<String, ArrayList<Inventory>> shopsInventories = new HashMap<>();
+
                 for (Shop shop : CommonVariables.shops) {
+
                     shopsInventories.put(shop.getName(), shop.getItems());
                 }
+
                 CommonVariables.shopsInventories = shopsInventories;
+
             } catch (Exception e) {
+
                 CommonVariables.logger.warning("Something went wrong while trying to read shops.yml");
+                CommonVariables.logger.warning(e.getMessage());
             }
         }
         if (!infiniteShopsFile.exists()) {
@@ -174,12 +180,23 @@ public final class Shops extends JavaPlugin {
 
         Initialization.registerEventHandlers(this);
         Initialization.registerCommands();
+        Initialization.shopMenuCreating();
+        Initialization.infiniteBuyShopMenuCreating();
+        Initialization.infiniteSellShopCreating();
+        Initialization.implementBStats(this);
 
         CommonVariables.logger.info("Shops plugin has been enabled!");
     }
 
     @Override
+    public void onLoad() {
+        CommandAPI.onLoad(new CommandAPIConfig());
+    }
+
+    @Override
     public void onDisable() {
+
+        CommandAPI.onDisable();
 
         FileConfiguration shopsSavingConfig = new YamlConfiguration();
         shopsSavingConfig.set("Shops", CommonVariables.shops);

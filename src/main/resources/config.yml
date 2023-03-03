@@ -1,0 +1,21 @@
+# The cost of creating a shop
+shopCost:
+  # The item that will be the price
+  material: diamond
+  # Amount of this item
+  amount: 10
+
+# The cost of adding 1 inventory page to your shop
+newPageCost:
+  # The item that will be the price
+  material: diamond
+  # Amount of this item
+  amount: 10
+defaultInventorySize: 27
+
+# The cost of adding 1 inventory line to your shop
+newLineCost:
+  # The item that will be the price
+  material: diamond
+  # Amount of this item
+  amount: 10

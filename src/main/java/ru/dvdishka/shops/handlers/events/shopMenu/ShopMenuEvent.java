@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import ru.dvdishka.shops.common.CommonVariables;
 import ru.dvdishka.shops.Classes.Shop;
+import ru.dvdishka.shops.common.Functions;
 
 public class ShopMenuEvent implements Listener {
 
@@ -23,19 +24,27 @@ public class ShopMenuEvent implements Listener {
 
                 Player player = (Player) event.getWhoClicked();
 
+                event.setCancelled(true);
+
                 if (event.getCurrentItem() != null) {
 
                     if (event.getCurrentItem().equals(CommonVariables.prevPage)) {
+
                         if (i > 0) {
+
                             player.playSound(player.getLocation(),
                                     org.bukkit.Sound.ITEM_BOOK_PAGE_TURN,
                                     50, 1);
+
                             event.getWhoClicked().openInventory(CommonVariables.shopMenu.get(i - 1));
+
                         } else {
+
                             player.playSound(player.getLocation(),
                                     org.bukkit.Sound.BLOCK_ANVIL_PLACE,
                                     50, 1);
                         }
+
                         event.setCancelled(true);
                         return;
                     }
@@ -48,6 +57,7 @@ public class ShopMenuEvent implements Listener {
                                     org.bukkit.Sound.ITEM_BOOK_PAGE_TURN,
                                     50, 1);
                             event.getWhoClicked().openInventory(CommonVariables.shopMenu.get(i + 1));
+
                         } else {
 
                             player.playSound(player.getLocation(),
@@ -67,16 +77,17 @@ public class ShopMenuEvent implements Listener {
                     }
 
                     ItemMeta currentItemMeta = event.getCurrentItem().getItemMeta();
+                    String shopName = Functions.removeChatColors(event.getCurrentItem().getItemMeta().getDisplayName());
 
                     player.playSound(player.getLocation(),
                             org.bukkit.Sound.UI_BUTTON_CLICK,
                             50, 1);
 
-                    if (!event.getWhoClicked().getName().equals(Shop.getShop(currentItemMeta.getDisplayName()).getOwner())) {
+                    if (!event.getWhoClicked().getName().equals(Shop.getShop(shopName).getOwner())) {
 
                         int pageIndex = 0;
 
-                        for (Inventory inventory : CommonVariables.shopsInventories.get(currentItemMeta.getDisplayName())) {
+                        for (Inventory inventory : CommonVariables.shopsInventories.get(shopName)) {
 
                             int index = 0;
 
@@ -84,7 +95,7 @@ public class ShopMenuEvent implements Listener {
 
                                 if (item == null) {
 
-                                    CommonVariables.shopsInventories.get(currentItemMeta.getDisplayName()).get(pageIndex)
+                                    CommonVariables.shopsInventories.get(shopName).get(pageIndex)
                                             .setItem(index, new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE));
                                 }
                                 index++;
@@ -92,12 +103,17 @@ public class ShopMenuEvent implements Listener {
                             pageIndex++;
                         }
                     } else {
+
                         int pageIndex = 0;
-                        for (Inventory inventory : CommonVariables.shopsInventories.get(currentItemMeta.getDisplayName())) {
+
+                        for (Inventory inventory : CommonVariables.shopsInventories.get(shopName)) {
+
                             int index = 0;
+
                             for (ItemStack item : inventory) {
+
                                 if (item != null && item.getType().equals(Material.LIGHT_GRAY_STAINED_GLASS_PANE)) {
-                                    CommonVariables.shopsInventories.get(currentItemMeta.getDisplayName()).get(pageIndex)
+                                    CommonVariables.shopsInventories.get(shopName).get(pageIndex)
                                             .setItem(index, null);
                                 }
                                 index++;
@@ -105,8 +121,7 @@ public class ShopMenuEvent implements Listener {
                             pageIndex++;
                         }
                     }
-                    event.getWhoClicked().openInventory(CommonVariables.shopsInventories
-                            .get(currentItemMeta.getDisplayName()).get(0));
+                    event.getWhoClicked().openInventory(CommonVariables.shopsInventories.get(shopName).get(0));
                     event.setCancelled(true);
                     return;
                 }

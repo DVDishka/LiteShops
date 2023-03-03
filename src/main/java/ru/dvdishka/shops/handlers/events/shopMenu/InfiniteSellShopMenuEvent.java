@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import ru.dvdishka.shops.common.CommonVariables;
 import ru.dvdishka.shops.Classes.Shop;
+import ru.dvdishka.shops.common.Functions;
 
 public class InfiniteSellShopMenuEvent implements Listener {
 
@@ -72,16 +73,17 @@ public class InfiniteSellShopMenuEvent implements Listener {
                     }
 
                     ItemMeta currentItemMeta = event.getCurrentItem().getItemMeta();
+                    String shopName = Functions.removeChatColors(event.getCurrentItem().getItemMeta().getDisplayName());
 
                     player.playSound(player.getLocation(),
                             org.bukkit.Sound.UI_BUTTON_CLICK,
                             50, 1);
 
-                    if (!event.getWhoClicked().getName().equals(Shop.getShop(currentItemMeta.getDisplayName()).getOwner())) {
+                    if (!event.getWhoClicked().getName().equals(Shop.getShop(shopName).getOwner())) {
 
                         int pageIndex = 0;
 
-                        for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(currentItemMeta.getDisplayName())) {
+                        for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(shopName)) {
 
                             int index = 0;
 
@@ -89,7 +91,7 @@ public class InfiniteSellShopMenuEvent implements Listener {
 
                                 if (item == null) {
 
-                                    CommonVariables.infiniteShopsInventories.get(currentItemMeta.getDisplayName()).get(pageIndex)
+                                    CommonVariables.infiniteShopsInventories.get(shopName).get(pageIndex)
                                             .setItem(index, new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE));
                                 }
                                 index++;
@@ -100,7 +102,7 @@ public class InfiniteSellShopMenuEvent implements Listener {
 
                         int pageIndex = 0;
 
-                        for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(currentItemMeta.getDisplayName())) {
+                        for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(shopName)) {
 
                             int index = 0;
 
@@ -108,7 +110,7 @@ public class InfiniteSellShopMenuEvent implements Listener {
 
                                 if (item != null && item.getType().equals(Material.LIGHT_GRAY_STAINED_GLASS_PANE)) {
 
-                                    CommonVariables.infiniteShopsInventories.get(currentItemMeta.getDisplayName()).get(pageIndex)
+                                    CommonVariables.infiniteShopsInventories.get(shopName).get(pageIndex)
                                             .setItem(index, null);
                                 }
                                 index++;
@@ -117,8 +119,7 @@ public class InfiniteSellShopMenuEvent implements Listener {
                         }
                     }
 
-                    event.getWhoClicked().openInventory(CommonVariables.infiniteShopsInventories
-                            .get(currentItemMeta.getDisplayName()).get(0));
+                    event.getWhoClicked().openInventory(CommonVariables.infiniteShopsInventories.get(shopName).get(0));
                     event.setCancelled(true);
                     return;
                 }

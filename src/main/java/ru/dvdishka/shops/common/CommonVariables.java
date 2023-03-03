@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 public class CommonVariables {
 
     public static Logger logger = Bukkit.getLogger();
+    public static final int bStatsPluginID = 17840;
     public static ItemStack prevPage;
     public static ItemStack nextPage;
 
@@ -27,4 +28,5 @@ public class CommonVariables {
     public static HashMap<String, String> playerShopUpgrade = new HashMap<>();
     public static ArrayList<Shop> infiniteShops = new ArrayList<>();
     public static HashMap<String, ArrayList<Inventory>> infiniteShopsInventories = new HashMap<>();
+    public static ArrayList<String> materials = new ArrayList<>();
 }

@@ -1,8 +1,10 @@
 package ru.dvdishka.shops.Classes;
 
+import dev.jorel.commandapi.SuggestionInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.Inventory;
@@ -14,6 +16,7 @@ import ru.dvdishka.shops.common.CommonVariables;
 import ru.dvdishka.shops.common.ConfigVariables;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,45 +29,97 @@ public class Shop implements ConfigurationSerializable {
     private ArrayList<Inventory> coffer = new ArrayList<>();
     private ItemStack icon;
     private Upgrade upgrade;
+    private ChatColor color;
     private boolean infinite;
     private boolean sell;
 
     public Shop(String name, String owner, ArrayList<Inventory> items, ArrayList<Inventory> coffer, ItemStack icon,
-                Upgrade upgrade, boolean infinite, boolean sell) {
+                Upgrade upgrade, ChatColor color, boolean infinite, boolean sell) {
+
         this.name = name;
         this.owner = owner;
         this.items = items;
         this.coffer = coffer;
         this.icon = icon;
+
+        ItemMeta iconMeta = icon.getItemMeta();
+
+        iconMeta.setDisplayName(color + (ChatColor.BOLD + name));
+        iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+
+        icon.setItemMeta(iconMeta);
+
         this.upgrade = upgrade;
+        this.color = color;
         this.infinite = infinite;
         this.sell = sell;
     }
 
-    public Shop(String name, String owner, ItemStack icon) {
+    public Shop(String name, String owner, ItemStack icon, ChatColor color) {
+
         this.name = name;
         this.owner = owner;
         this.icon = icon;
+
+        ItemMeta iconMeta = icon.getItemMeta();
+
+        iconMeta.setDisplayName(color + (ChatColor.BOLD + name));
+        iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+
+        icon.setItemMeta(iconMeta);
+
         if (ConfigVariables.defaultInventorySize % 9 == 0) {
             this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9);
         } else {
             this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9 + 1);
         }
+        this.color = color;
         this.infinite = false;
         this.sell = false;
     }
 
-    public Shop(String name, String owner, ItemStack icon, boolean infinite, boolean sell) {
+    public Shop(String name, String owner, ItemStack icon, ChatColor color, boolean infinite, boolean sell) {
+
         this.name = name;
         this.owner = owner;
         this.icon = icon;
+
+        ItemMeta iconMeta = icon.getItemMeta();
+
+        iconMeta.setDisplayName(color + (ChatColor.BOLD + name));
+        iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+
+        icon.setItemMeta(iconMeta);
+
         if (ConfigVariables.defaultInventorySize % 9 == 0) {
             this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9);
         } else {
             this.upgrade = new Upgrade(1, ConfigVariables.defaultInventorySize / 9 + 1);
         }
+        this.color = color;
         this.infinite = infinite;
         this.sell = sell;
+    }
+
+    public static String[] getPlayerShops(SuggestionInfo info) {
+        ArrayList<String> shopsArrayList = new ArrayList<>();
+
+        for (Shop shop : CommonVariables.shops) {
+
+            if (shop.getOwner().equals(info.sender().getName())) {
+
+                shopsArrayList.add(shop.getName());
+            }
+        }
+        for (Shop shop : CommonVariables.infiniteShops) {
+
+            if (shop.getOwner().equals(info.sender().getName())) {
+
+                shopsArrayList.add(shop.getName());
+            }
+        }
+
+        return shopsArrayList.toArray(new String[0]);
     }
 
     public String getName() {
@@ -89,6 +144,10 @@ public class Shop implements ConfigurationSerializable {
 
     public Upgrade getUpgrade() {
         return this.upgrade;
+    }
+
+    public ChatColor getColor() {
+        return this.color;
     }
 
     public boolean isInfinite() {
@@ -128,6 +187,7 @@ public class Shop implements ConfigurationSerializable {
     }
 
     public static Shop getShop(String name) {
+
         for (Shop shop : CommonVariables.shops) {
             if (shop.getName().equals(name)) {
                 return shop;
@@ -147,6 +207,18 @@ public class Shop implements ConfigurationSerializable {
 
     public void setSell(boolean sell) {
         this.sell = sell;
+    }
+
+    public void setColor(ChatColor color) {
+
+        this.color = color;
+
+        ItemMeta iconMeta = icon.getItemMeta();
+
+        iconMeta.setDisplayName(ChatColor.BOLD + (color + name));
+        iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+
+        icon.setItemMeta(iconMeta);
     }
 
     @Override
@@ -193,6 +265,7 @@ public class Shop implements ConfigurationSerializable {
         map.put("items", contents);
         map.put("icon", icon);
         map.put("upgrade", upgrade);
+        map.put("color", color.name());
         map.put("infinite", infinite);
         map.put("sell", sell);
         return map;
@@ -232,7 +305,7 @@ public class Shop implements ConfigurationSerializable {
         for (ArrayList<ItemStack> item : coffers) {
 
             Inventory inventory = Bukkit.createInventory(null, item.size(),
-                    ChatColor.GOLD + name + " coffer " + i);
+                    ChatColor.RED + (ChatColor.BOLD + name + " coffer: ") + ChatColor.RESET + i);
 
             int index = 0;
 
@@ -251,6 +324,24 @@ public class Shop implements ConfigurationSerializable {
             i++;
         }
 
+        ChatColor color;
+
+        try {
+
+            color = ChatColor.valueOf((String) map.get("color"));
+
+        } catch (Exception e) {
+
+            color = Color.getRandomColor().getChatColor();
+
+            ItemMeta iconMeta = icon.getItemMeta();
+
+            iconMeta.setDisplayName(ChatColor.BOLD + (color + name));
+            iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+
+            icon.setItemMeta(iconMeta);
+        }
+
         try {
 
             i = 1;
@@ -264,19 +355,19 @@ public class Shop implements ConfigurationSerializable {
                 if (!infinite) {
 
                     inventory = Bukkit.createInventory(null, item.size(),
-                            ChatColor.GOLD + name + " " + i);
+                            color + (ChatColor.BOLD + name + ": ") + ChatColor.RESET + i);
 
                 } else {
 
                     if (sell) {
 
                         inventory = Bukkit.createInventory(null, item.size(),
-                                ChatColor.RED + name + " " + i);
+                                color + (ChatColor.BOLD + name + ": ") + ChatColor.RESET + i);
 
                     } else {
 
                         inventory = Bukkit.createInventory(null, item.size(),
-                                ChatColor.GREEN + name + " " + i);
+                                color + (ChatColor.BOLD + name + ": ") + ChatColor.RESET + i);
                     }
                 }
 
@@ -292,7 +383,7 @@ public class Shop implements ConfigurationSerializable {
                 i++;
             }
 
-            return new Shop(name, owner, items, coffer, icon, upgrade, infinite, sell);
+            return new Shop(name, owner, items, coffer, icon, upgrade, color, infinite, sell);
 
         } catch (Exception e) {
 
@@ -300,7 +391,7 @@ public class Shop implements ConfigurationSerializable {
             ArrayList<ShopItem> oldItems = (ArrayList<ShopItem>) map.get("items");
 
             Inventory inventory = Bukkit.createInventory(null, 27,
-                    ChatColor.GOLD + name + " 1");
+                    ChatColor.DARK_AQUA + (ChatColor.BOLD + name + ": ") + ChatColor.RESET + 1);
 
             i = 0;
 
@@ -323,7 +414,7 @@ public class Shop implements ConfigurationSerializable {
 
             items.add(inventory);
 
-            return new Shop(name, owner, items, coffer, icon, upgrade, infinite, sell);
+            return new Shop(name, owner, items, coffer, icon, upgrade, color, infinite, sell);
         }
     }
 }

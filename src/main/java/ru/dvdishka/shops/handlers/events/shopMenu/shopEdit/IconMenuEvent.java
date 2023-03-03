@@ -8,8 +8,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
 import ru.dvdishka.shops.common.CommonVariables;
 import ru.dvdishka.shops.Classes.Shop;
+import ru.dvdishka.shops.common.Functions;
+
+import java.util.Arrays;
+
+import static ru.dvdishka.shops.common.Functions.sendSuccess;
 
 public class IconMenuEvent implements Listener {
 
@@ -62,13 +68,89 @@ public class IconMenuEvent implements Listener {
                                 org.bukkit.Sound.ENTITY_PLAYER_LEVELUP,
                                 50, 1);
                         ItemMeta iconMeta = icon.getItemMeta();
-                        iconMeta.setDisplayName(CommonVariables.playerShopIconChoose.get(event.getWhoClicked().getName()));
-                        icon.setItemMeta(iconMeta);
+                        String shopName = CommonVariables.playerShopIconChoose.get(event.getWhoClicked().getName());
+
                         Shop shop = Shop.getShop(CommonVariables.playerShopIconChoose.get(event.getWhoClicked().getName()));
+                        ChatColor shopColor = shop.getColor();
+
+                        iconMeta.setDisplayName(shopColor + (ChatColor.BOLD + shopName));
+                        iconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
+                        icon.setItemMeta(iconMeta);
+
                         shop.setIcon(icon);
-                        player.sendTitle(ChatColor.DARK_GREEN + shop.getName(),
-                                ChatColor.GOLD + "New icon has been set");
+                        sendSuccess(player, "New icon has been set to " + shopName);
                         player.closeInventory();
+
+                        if (!shop.isInfinite()) {
+
+                            for (Inventory shopMenuPage : CommonVariables.shopMenu) {
+
+                                for (ItemStack shopIcon : shopMenuPage) {
+
+                                    if (shopIcon != null) {
+
+                                        ItemMeta shopIconMeta = shopIcon.getItemMeta();
+
+                                        if (shopIconMeta != null) {
+
+                                            shopName = Functions.removeChatColors(shopIconMeta.getDisplayName());
+
+                                            if (shopName.equals(shop.getName())) {
+
+                                                shopIcon.setType(icon.getType());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+
+                            if (shop.isSell()) {
+
+                                for (Inventory shopMenuPage : CommonVariables.infiniteSellShopMenu) {
+
+                                    for (ItemStack shopIcon : shopMenuPage) {
+
+                                        if (shopIcon != null) {
+
+                                            ItemMeta shopIconMeta = shopIcon.getItemMeta();
+
+                                            if (shopIconMeta != null) {
+
+                                                shopName = Functions.removeChatColors(shopIconMeta.getDisplayName());
+
+                                                if (shopName.equals(shop.getName())) {
+
+                                                    shopIcon.setType(icon.getType());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+
+                                for (Inventory shopMenuPage : CommonVariables.infiniteBuyShopMenu) {
+
+                                    for (ItemStack shopIcon : shopMenuPage) {
+
+                                        if (shopIcon != null) {
+
+                                            ItemMeta shopIconMeta = shopIcon.getItemMeta();
+
+                                            if (shopIconMeta != null) {
+
+                                                shopName = Functions.removeChatColors(shopIconMeta.getDisplayName());
+
+                                                if (shopName.equals(shop.getName())) {
+
+                                                    shopIcon.setType(icon.getType());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         player.playSound(player.getLocation(),
                                 org.bukkit.Sound.BLOCK_ANVIL_PLACE,

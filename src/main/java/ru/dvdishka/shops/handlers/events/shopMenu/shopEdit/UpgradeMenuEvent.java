@@ -18,7 +18,7 @@ import ru.dvdishka.shops.Classes.Upgrade;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpgradeMenuClick implements Listener {
+public class UpgradeMenuEvent implements Listener {
 
     @org.bukkit.event.EventHandler
     public void onUpgradeMenuClick(InventoryClickEvent event) {
@@ -86,21 +86,21 @@ public class UpgradeMenuClick implements Listener {
                         if (!isInfinite) {
 
                             inventory = Bukkit.createInventory(null, CommonVariables.shopsInventories.get(shop.getName()).get(0).getSize(),
-                                    ChatColor.GOLD + shop.getName() + " " +
-                                            (CommonVariables.shopsInventories.get(shop.getName()).size() + 1));
+                                    shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") +
+                                            ChatColor.RESET + (CommonVariables.shopsInventories.get(shop.getName()).size() + 1));
                         } else {
 
                             if (shop.isSell()) {
 
                                 inventory = Bukkit.createInventory(null, CommonVariables.infiniteShopsInventories.get(shop.getName()).get(0).getSize(),
-                                        ChatColor.GREEN + shop.getName() + " " +
-                                                (CommonVariables.infiniteShopsInventories.get(shop.getName()).size() + 1));
+                                        shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") +
+                                                ChatColor.RESET + (CommonVariables.infiniteShopsInventories.get(shop.getName()).size() + 1));
 
                             } else {
 
                                 inventory = Bukkit.createInventory(null, CommonVariables.infiniteShopsInventories.get(shop.getName()).get(0).getSize(),
-                                        ChatColor.GREEN + shop.getName() + " " +
-                                                (CommonVariables.infiniteShopsInventories.get(shop.getName()).size() + 1));
+                                        shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") +
+                                                ChatColor.RESET + (CommonVariables.infiniteShopsInventories.get(shop.getName()).size() + 1));
                             }
                         }
 
@@ -186,7 +186,7 @@ public class UpgradeMenuClick implements Listener {
 
                                 Inventory newInventory = Bukkit.createInventory(null, CommonVariables.shopsInventories
                                                 .get(shop.getName()).get(0).getSize() + 9,
-                                        ChatColor.GOLD + shop.getName() + " " + (i + 1));
+                                        shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") + ChatColor.RESET + (i + 1));
                                 for (ItemStack itemStack : inventory) {
                                     if (itemStack == null || !itemStack.equals(CommonVariables.prevPage) && !itemStack.equals(CommonVariables.nextPage)) {
                                         newInventory.setItem(j, itemStack);
@@ -220,13 +220,15 @@ public class UpgradeMenuClick implements Listener {
 
                                     newInventory = Bukkit.createInventory(null, CommonVariables.infiniteShopsInventories
                                                     .get(shop.getName()).get(0).getSize() + 9,
-                                            ChatColor.GREEN + shop.getName() + " " + (i + 1));
+                                            shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") +
+                                                    ChatColor.RESET + (i + 1));
 
                                 } else {
 
                                     newInventory = Bukkit.createInventory(null, CommonVariables.infiniteShopsInventories
                                                     .get(shop.getName()).get(0).getSize() + 9,
-                                            ChatColor.RED + shop.getName() + " " + (i + 1));
+                                            shop.getColor() + (ChatColor.BOLD + shop.getName() + ": ") +
+                                                    ChatColor.RESET + (i + 1));
                                 }
                                 for (ItemStack itemStack : inventory) {
                                     if (itemStack == null || !itemStack.equals(CommonVariables.prevPage) && !itemStack.equals(CommonVariables.nextPage)) {
