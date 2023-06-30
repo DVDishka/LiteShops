@@ -1,6 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.coffer;
 
-import org.bukkit.ChatColor;
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,9 +13,9 @@ import static ru.dvdishka.shops.common.Functions.sendFailure;
 public class CofferOpenShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
-        Shop shop = Shop.getShop((String) args[0]);
+        Shop shop = Shop.getShop((String) args.get(0));
 
         if (shop == null) {
 

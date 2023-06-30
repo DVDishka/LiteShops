@@ -1,5 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.edit;
 
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,13 +20,13 @@ import static ru.dvdishka.shops.common.Functions.sendSuccess;
 public class EditPriceShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
         int page = 0;
         int index = 0;
         int price = 0;
 
-        Shop shop = Shop.getShop((String) args[0]);
+        Shop shop = Shop.getShop((String) args.get(0));
 
         if (shop == null) {
 
@@ -39,17 +40,17 @@ public class EditPriceShopCommand implements PlayerCommandHandler {
             return false;
         }
 
-        page = (Integer) args[1];
+        page = (Integer) args.get(1);
 
-        index = (Integer) args[2];
+        index = (Integer) args.get(2);
 
-        if (index < 1 || index > ConfigVariables.defaultInventorySize) {
+        if (index < 1 || index > shop.getUpgrade().getLineProgress() * 9) {
 
-            sendFailure(sender, "Index must be >= 1 and <= " + ConfigVariables.defaultInventorySize);
+            sendFailure(sender, "Index must be >= 1 and <= " + shop.getUpgrade().getLineProgress() * 9);
             return false;
         }
 
-        price = (Integer) args[4];
+        price = (Integer) args.get(4);
 
         if (price <= 0) {
 
@@ -59,7 +60,7 @@ public class EditPriceShopCommand implements PlayerCommandHandler {
 
         try {
 
-            Material.valueOf(((String) args[3]).toUpperCase());
+            Material.valueOf(((String) args.get(3)).toUpperCase());
 
         } catch (Exception e) {
 
@@ -84,7 +85,7 @@ public class EditPriceShopCommand implements PlayerCommandHandler {
 
             List<String> list = new ArrayList<>();
 
-            list.add(ChatColor.GREEN + "Price: " + ChatColor.RED + (String.valueOf(args[4])) + " " + ((String) args[3]).toUpperCase());
+            list.add(ChatColor.GREEN + "Price: " + ChatColor.RED + (String.valueOf(args.get(4))) + " " + ((String) args.get(3)).toUpperCase());
 
             meta.setLore(list);
 
@@ -109,11 +110,11 @@ public class EditPriceShopCommand implements PlayerCommandHandler {
 
             if (shop.isSell()) {
 
-                list.add(ChatColor.RED + "Sell for: " + ChatColor.GREEN + ((String) args[4]) + " " + ((String) args[3]).toUpperCase());
+                list.add(ChatColor.RED + "Sell for: " + ChatColor.GREEN + ((String) args.get(4)) + " " + ((String) args.get(3)).toUpperCase());
 
             } else {
 
-                list.add(ChatColor.GREEN + "Price: " + ChatColor.RED + ((String) args[4]) + " " + ((String) args[3]).toUpperCase());
+                list.add(ChatColor.GREEN + "Price: " + ChatColor.RED + ((String) args.get(4)) + " " + ((String) args.get(3)).toUpperCase());
             }
 
             meta.setLore(list);

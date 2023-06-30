@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -106,14 +107,14 @@ public class Shop implements ConfigurationSerializable {
 
         for (Shop shop : CommonVariables.shops) {
 
-            if (shop.getOwner().equals(info.sender().getName())) {
+            if (shop.getOwner().equals(((Player) info.sender()).getName())) {
 
                 shopsArrayList.add(shop.getName());
             }
         }
         for (Shop shop : CommonVariables.infiniteShops) {
 
-            if (shop.getOwner().equals(info.sender().getName())) {
+            if (shop.getOwner().equals(((Player) info.sender()).getName())) {
 
                 shopsArrayList.add(shop.getName());
             }

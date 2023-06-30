@@ -1,5 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.open;
 
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.entity.Player;
 
 import ru.dvdishka.shops.Classes.PlayerCommandHandler;
@@ -11,7 +12,7 @@ import static ru.dvdishka.shops.common.Functions.sendFailure;
 public class InfiniteSellOpenShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
         int shopsAmount = 0;
 

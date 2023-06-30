@@ -3,6 +3,7 @@ package ru.dvdishka.shops.handlers.events.shopMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,11 @@ public class InfiniteBuyShopMenuEvent implements Listener {
         int i = 0;
 
         for (Inventory shopMenuPage : CommonVariables.infiniteBuyShopMenu) {
+
+            if (shopMenuPage.equals(event.getView().getTopInventory()) && event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                event.setCancelled(true);
+                return;
+            }
 
             if (shopMenuPage.equals(event.getClickedInventory())) {
 

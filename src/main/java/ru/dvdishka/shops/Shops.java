@@ -1,6 +1,7 @@
 package ru.dvdishka.shops;
 
 import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPIConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,7 +33,7 @@ public final class Shops extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        CommandAPI.onEnable(this);
+        CommandAPI.onEnable();
 
         File rootDir = new File("plugins/Shops");
         File shopsFile = new File("plugins/Shops/shops.yml");
@@ -190,7 +191,7 @@ public final class Shops extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIConfig());
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
     }
 
     @Override

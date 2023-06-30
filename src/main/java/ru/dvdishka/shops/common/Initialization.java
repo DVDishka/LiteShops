@@ -37,7 +37,8 @@ import ru.dvdishka.shops.handlers.events.shopMenu.shopEdit.UpgradeMenuEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Initialization {
+public class
+Initialization {
 
     public static void registerEventHandlers(Plugin plugin) {
 

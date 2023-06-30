@@ -25,7 +25,11 @@ public class InfiniteShopCofferEvent implements Listener {
                 if (event.getClickedInventory() != null && event.getView().getTopInventory().equals(coffer)) {
 
                     if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                        event.setCancelled(true);
+                        return;
+                    }
 
+                    if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
                         event.setCancelled(true);
                         return;
                     }

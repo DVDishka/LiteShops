@@ -33,6 +33,11 @@ public class ShopInventoryEvent implements Listener {
                 if (!shop.getOwner().equals(event.getWhoClicked().getName()) &&
                         event.getView().getTopInventory().equals(inventory)) {
 
+                    if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     int i = 0;
 
                     for (ItemStack item : inventory) {
@@ -56,6 +61,11 @@ public class ShopInventoryEvent implements Listener {
             for (Inventory inventory : CommonVariables.shopsInventories.get(shop.getName())) {
 
                 if (inventory.equals(event.getView().getTopInventory())) {
+
+                    if (inventory.equals(event.getView().getTopInventory()) && event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                        event.setCancelled(true);
+                        return;
+                    }
 
                     int index = 0;
 
@@ -243,9 +253,10 @@ public class ShopInventoryEvent implements Listener {
 
                                                 for (ItemStack item : coffer) {
 
-                                                    if (item == null) {
+                                                    if (item == null || item.getType().equals(Material.LIGHT_GRAY_STAINED_GLASS_PANE)) {
 
                                                         shop.getCoffer().get(cofferIndex).setItem(index, priceItem);
+                                                        shop.getCoffer().get(cofferIndex).getItem(index).setAmount(price);
                                                         flag = true;
                                                         break;
                                                     }
@@ -263,7 +274,7 @@ public class ShopInventoryEvent implements Listener {
                                                 Inventory newCoffer = Bukkit.createInventory(null,
                                                         ConfigVariables.defaultInventorySize,
                                                         ChatColor.RED + (ChatColor.BOLD + shop.getName() + " coffer: ") +
-                                                                ChatColor.RESET + shop.getCoffer().size() + 1);
+                                                                ChatColor.RESET + (shop.getCoffer().size() + 1));
 
                                                 newCoffer.setItem(ConfigVariables.defaultPrevPageIndex, CommonVariables.prevPage);
                                                 newCoffer.setItem(ConfigVariables.defaultNextPageIndex, CommonVariables.nextPage);

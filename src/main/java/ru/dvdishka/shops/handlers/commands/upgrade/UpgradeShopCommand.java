@@ -1,5 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.upgrade;
 
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,9 +21,9 @@ import static ru.dvdishka.shops.common.Functions.sendFailure;
 public class UpgradeShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
-        Shop shop = Shop.getShop((String) args[0]);
+        Shop shop = Shop.getShop((String) args.get(0));
 
         if (shop == null) {
 

@@ -1,6 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.create;
 
-import net.kyori.adventure.bossbar.BossBar;
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,10 +25,10 @@ import static ru.dvdishka.shops.common.Functions.sendSuccess;
 public class CreatingShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
-        String shopName = (String) args[0];
-        String playerName = (String) args[1];
+        String shopName = (String) args.get(0);
+        String playerName = (String) args.get(1);
 
         if (CommonVariables.playerShopCreating.get(playerName) == null ||
                 !CommonVariables.playerShopCreating.get(playerName).equals(shopName)) {
@@ -48,7 +48,7 @@ public class CreatingShopCommand implements PlayerCommandHandler {
 
         for (Shop checkShop : CommonVariables.shops) {
 
-            if (checkShop.getName().equals(args[1])) {
+            if (checkShop.getName().equals(args.get(1))) {
 
                 sendFailure(senderPlayer, "There is already a shop with the same name!");
                 return false;

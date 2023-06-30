@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +26,11 @@ public class UpgradeMenuEvent implements Listener {
 
         if (event.getClickedInventory() != null && event.getClickedInventory().equals(CommonVariables.upgradeMenu.
                 get(event.getWhoClicked().getName()))) {
+
+            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                event.setCancelled(true);
+                return;
+            }
 
             if (event.getCurrentItem() != null) {
 

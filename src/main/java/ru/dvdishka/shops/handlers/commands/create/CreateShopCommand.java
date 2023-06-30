@@ -1,9 +1,9 @@
 package ru.dvdishka.shops.handlers.commands.create;
 
+import dev.jorel.commandapi.executors.CommandArguments;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import ru.dvdishka.shops.Classes.PlayerCommandHandler;
 import ru.dvdishka.shops.Classes.Shop;
@@ -15,9 +15,9 @@ import static ru.dvdishka.shops.common.Functions.sendFailure;
 public class CreateShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
-        String shopName = (String) args[0];
+        String shopName = (String) args.get(0);
 
 
         for (Shop shop : CommonVariables.shops) {

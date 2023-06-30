@@ -1,6 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.create;
 
-import net.kyori.adventure.bossbar.BossBar;
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,11 +24,11 @@ import static ru.dvdishka.shops.common.Functions.sendSuccess;
 public class InfiniteBuyCreateShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
         for (Shop shop : CommonVariables.infiniteShops) {
 
-            if (shop.getName().equals((String) args[0])) {
+            if (shop.getName().equals((String) args.get(0))) {
 
                 sendFailure(sender, "A shop with that name already exists!");
                 return false;
@@ -37,7 +37,7 @@ public class InfiniteBuyCreateShopCommand implements PlayerCommandHandler {
 
         for (Shop shop : CommonVariables.shops) {
 
-            if (shop.getName().equals((String) args[0])) {
+            if (shop.getName().equals((String) args.get(0))) {
 
                 sendFailure(sender, "A shop with that name already exists!");
                 return false;
@@ -48,11 +48,11 @@ public class InfiniteBuyCreateShopCommand implements PlayerCommandHandler {
         ItemMeta shopIconMeta = shopIcon.getItemMeta();
         ChatColor shopColor = Color.getRandomColor().getChatColor();
 
-        shopIconMeta.setDisplayName(shopColor + (ChatColor.BOLD + (String) args[0]));
+        shopIconMeta.setDisplayName(shopColor + (ChatColor.BOLD + (String) args.get(0)));
         shopIconMeta.setLore(Arrays.asList(ChatColor.GREEN + "[Click to open]"));
         shopIcon.setItemMeta(shopIconMeta);
 
-        Shop newShop = new Shop((String) args[0], sender.getName(), shopIcon, shopColor, true, false);
+        Shop newShop = new Shop((String) args.get(0), sender.getName(), shopIcon, shopColor, true, false);
 
         CommonVariables.infiniteShops.add(newShop);
 

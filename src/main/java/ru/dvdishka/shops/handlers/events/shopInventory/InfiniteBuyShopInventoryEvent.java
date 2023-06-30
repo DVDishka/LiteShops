@@ -35,6 +35,11 @@ public class InfiniteBuyShopInventoryEvent implements Listener {
 
                     int i = 0;
 
+                    if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     for (ItemStack item : inventory) {
 
                         if (item == null) {
@@ -56,6 +61,11 @@ public class InfiniteBuyShopInventoryEvent implements Listener {
             for (Inventory inventory : CommonVariables.infiniteShopsInventories.get(shop.getName())) {
 
                 if (inventory.equals(event.getView().getTopInventory()) && !shop.isSell()) {
+
+                    if (inventory.equals(event.getView().getTopInventory()) && event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                        event.setCancelled(true);
+                        return;
+                    }
 
                     int index = 0;
 

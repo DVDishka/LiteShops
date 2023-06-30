@@ -1,5 +1,6 @@
 package ru.dvdishka.shops.handlers.commands.edit;
 
+import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,12 +20,12 @@ import static ru.dvdishka.shops.common.Functions.sendSuccess;
 public class EditColorShopCommand implements PlayerCommandHandler {
 
     @Override
-    public boolean execute(Player sender, Object[] args) {
+    public boolean execute(Player sender, CommandArguments args) {
 
-        String shopName = (String) args[0];
-        ChatColor newShopColor = (ChatColor) args[1];
+        String shopName = (String) args.get(0);
+        ChatColor newShopColor = (ChatColor) args.get(1);
 
-        Shop shop = Shop.getShop((String) args[0]);
+        Shop shop = Shop.getShop((String) args.get(0));
 
         if (shop == null) {
 

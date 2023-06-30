@@ -30,6 +30,12 @@ public class ShopCofferEvent implements Listener {
                         return;
                     }
 
+                    if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     int index = 0;
 
                     for (ItemStack itemStack : event.getView().getTopInventory()) {
